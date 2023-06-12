@@ -1,0 +1,6 @@
+Library => {
+    1. express => ya taulah fungsi nya ya
+    2. nodemon => ni buat supaya gk usah mati nyalain server nya
+    3. body-perser => buat bisa nangkep body dari (req) luar
+    3. mysql => tau lah ya
+}
