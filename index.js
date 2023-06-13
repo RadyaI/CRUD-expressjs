@@ -1,14 +1,21 @@
 const express = require('express')
 const app = express()
 const port = 3000
+const bcrypt = require('bcryptjs')
+const saltRounds = 10
 const parser = require('body-parser')
 const DB = require('./connection')
+const cors = require('cors')
 const response = require('./response')
 
 app.use(parser.json())
+app.use(cors({
+    origin: 'http://localhost:8080',
+    optionsSuccessStatus: 200    
+}))
 
-app.get('/getMahasiswa', (req, res) => {
-    DB.query("SELECT * FROM mahasiswa", (error, result) => {
+app.get('/getUser', (req, res) => {
+    DB.query("SELECT * FROM users", (error, result) => {
         // Hasilnya
         if (error) {
             response(500, error, "Kayaknya ada yang error cuy", res)
@@ -16,13 +23,14 @@ app.get('/getMahasiswa', (req, res) => {
         if (result == '') {
             response(404, error, "Datanya Kayaknya ga ada deh", res)
         } else {
-            response(200, result, "Get All Mahasiswa Data", res)
+            // response(200, result, "Get All Mahasiswa Data", res)
+            res.send(result)
         }
     })
 })
 
-app.get('/getMahasiswa/:nim', (req, res) => {
-    DB.query(`SELECT nama_siswa FROM mahasiswa WHERE nim = ${req.params.nim}`, (error, result) => {
+app.get('/getUser/:id', (req, res) => {
+    DB.query(`SELECT name FROM users WHERE id = ${req.params.id}`, (error, result) => {
         if (error) {
             response(500, error, "Ada yang error coy", res)
         }
@@ -34,16 +42,22 @@ app.get('/getMahasiswa/:nim', (req, res) => {
     })
 })
 
-app.post('/createMahasiswa', (req, res) => {
-    const { nim, nama_siswa, alamat, kelas } = req.body
+app.post('/createUser', (req, res) => {
+    const { name, email, password, level } = req.body
     console.log(req.body)
-    const query = `INSERT INTO mahasiswa (nim, nama_siswa, alamat, kelas) VALUES (${nim}, '${nama_siswa}', '${alamat}', '${kelas}')`
-    DB.query(query, (err, result) => {
-        console.log(result)
-        if (result) {
-            response(200, "WOW", "Berhasil ini mah", res)
-        } else if (err) {
-            res.send(422, err)
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+        if (err) {
+            response(500, "No", "Failed Hash", res)
+        } else {
+            const query = `INSERT INTO users (name, email, password, level) VALUES (?, ?, ?, ?)`
+            DB.query(query, [name, email, hash, level], (err, result) => {
+                console.log(result)
+                if (result) {
+                    response(200, "WOW", "Berhasil ini mah", res)
+                } else if (err) {
+                    res.send(422, err)
+                } 
+            })
         }
     })
 })
@@ -88,6 +102,41 @@ app.get('/getDosen/:id', (req, res) => {
             response(404, error, "DataNya Mana?", res)
         } else {
             response(200, result, "Find Dosen By ID", res)
+        }
+    })
+})
+
+app.post('/createDosen', (req, res) => {
+    const { nama_dosen, alamat } = req.body
+    const query = `INSERT INTO dosen (nama_dosen, alamat) VALUES ('${nama_dosen}', '${alamat}')`
+
+    DB.query(query, (error, result) => {
+        if (error) {
+            response(500, error, "Waduh", res)
+        } else if (result) {
+            response(200, req.body, "Yee Berhasil", res)
+        }
+    })
+})
+
+app.put('/updateDosen/:id', (req, res) => {
+    const { nama_dosen, alamat } = req.body
+    const query = `UPDATE dosen SET nama_dosen = '${nama_dosen}', alamat = '${alamat}' WHERE id_dosen = ${req.params.id}`
+
+    DB.query(query, (error, result) => {
+        if (error) {
+            response(500, error, "Failed UpdateDosen", res)
+        } else if (result) {
+            response(200, "OK", "Berhasil Update Dosen", res)
+        }
+    })
+})
+
+app.delete('/deleteDosen/:id', (req, res) => {
+    DB.query(`DELETE FROM dosen WHERE id_dosen = ${req.params.id}`, (err, result) => {
+        if (err) throw err
+        if (result) {
+            response(200, result, "Berhasil Delete Dosen", res)
         }
     })
 })

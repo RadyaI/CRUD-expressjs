@@ -3,4 +3,5 @@ Library => {
     2. nodemon => ni buat supaya gk usah mati nyalain server nya
     3. body-perser => buat bisa nangkep body dari (req) luar
     3. mysql => tau lah ya
+    4. cors => Supaya gk di blok sama si frontend gtu lah 
 }

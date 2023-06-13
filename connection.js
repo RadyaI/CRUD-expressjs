@@ -4,7 +4,7 @@ const DB = sql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "cuy_university"
+    database: "hotel_laravel9"
 })
 
 module.exports = DB
