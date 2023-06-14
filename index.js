@@ -24,13 +24,13 @@ app.get('/getuser', (req, res) => {
         } else if (result == '') {
             response(404, error, "Data Not Found", res)
         } else {
-            response(200, result, "Get All Data Mahasiswa", res)
+            response(200, result, "Get All User Data", res)
         }
     })
 })
 
 
-app.get('/getUser/:id', (req, res) => {
+app.get('/getuser/:id', (req, res) => {
     DB.query(`SELECT name FROM users WHERE id = ${req.params.id}`, (error, result) => {
         if (error) {
             response(500, error, "Ada yang error coy", res)

@@ -1,18 +1,22 @@
 const response = (Status, data, msg, res) => {
     res.json(Status, [
         {
-            PayLoad: {
-                Status: Status,
+            payload: {
+                status: Status,
+                Message: msg,
+                Response: "Tolong Lah ya",
                 data: data,
-                msg: msg
             },
             Pagination: {
-                next: "",
-                prev: "",
-                current: ""
+                Next: '',
+                Prevent: '',
+                CurrentPage: ''
             }
         }
     ])
 }
 
 module.exports = response
+
+
+
