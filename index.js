@@ -11,23 +11,24 @@ const response = require('./response')
 app.use(parser.json())
 app.use(cors({
     origin: 'http://localhost:8080',
-    optionsSuccessStatus: 200    
+    optionsSuccessStatus: 200
 }))
 
-app.get('/getUser', (req, res) => {
-    DB.query("SELECT * FROM users", (error, result) => {
-        // Hasilnya
+
+
+app.get('/getuser', (req, res) => {
+    const query = `SELECT * FROM users`
+    DB.query(query, (error, result) => {
         if (error) {
-            response(500, error, "Kayaknya ada yang error cuy", res)
-        }
-        if (result == '') {
-            response(404, error, "Datanya Kayaknya ga ada deh", res)
+            response(500, error, "Internal Server Error", res)
+        } else if (result == '') {
+            response(404, error, "Data Not Found", res)
         } else {
-            // response(200, result, "Get All Mahasiswa Data", res)
-            res.send(result)
+            response(200, result, "Get All Data Mahasiswa", res)
         }
     })
 })
+
 
 app.get('/getUser/:id', (req, res) => {
     DB.query(`SELECT name FROM users WHERE id = ${req.params.id}`, (error, result) => {
@@ -56,7 +57,7 @@ app.post('/createUser', (req, res) => {
                     response(200, "WOW", "Berhasil ini mah", res)
                 } else if (err) {
                     res.send(422, err)
-                } 
+                }
             })
         }
     })
